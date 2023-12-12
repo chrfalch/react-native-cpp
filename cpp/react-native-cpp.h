@@ -1,8 +1,5 @@
-#ifndef CPP_H
-#define CPP_H
+#pragma once
 
-namespace cpp {
-  double multiply(double a, double b);
+namespace RNJsi {
+double multiply(double a, double b);
 }
-
-#endif /* CPP_H */
