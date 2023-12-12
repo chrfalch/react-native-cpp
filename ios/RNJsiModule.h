@@ -1,5 +1,5 @@
 #ifdef __cplusplus
-#import "react-native-cpp.h"
+#import "JsiModuleRegistry.h"
 #endif
 
 #ifdef RCT_NEW_ARCH_ENABLED

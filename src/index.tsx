@@ -13,7 +13,7 @@ const CppModule = isTurboModuleEnabled
   ? require('./NativeCpp').default
   : NativeModules.Cpp;
 
-const Cpp = CppModule
+export const RNJsiModule = CppModule
   ? CppModule
   : new Proxy(
       {},
@@ -24,6 +24,10 @@ const Cpp = CppModule
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return Cpp.multiply(a, b);
+// Installs the JSI bindings into the global namespace.
+console.log('Installing C++ bindings...');
+const result = RNJsiModule.install() as boolean;
+if (result !== true) {
+  console.error(`Failed to install C++ bindings!`);
 }
+console.log('Successfully installed!');

@@ -54,7 +54,7 @@ public:
 
     // Call initializer if it is registered
     if (initializerFunc) {
-      initializerFunc(rt, result, args, count);
+      initializerFunc(rt, jsi::Value(rt, result), args, count);
     }
 
     // Return our new object
@@ -165,7 +165,7 @@ public:
   }
 };
 
-struct TestObject {
+/*struct TestObject {
   TestObject(double x, double y) : x(x), y(y) {}
   double x;
   double y;
@@ -208,6 +208,6 @@ class JsiNativeStateTestObject
     auto testObject = getState(rt, thisValue);
     return testObject->y;
   }
-};
+};*/
 
 } // namespace RNJsi

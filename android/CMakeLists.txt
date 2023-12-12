@@ -1,10 +1,17 @@
+project(react-native-cpp)
 cmake_minimum_required(VERSION 3.4.1)
-project(Cpp)
 
 set (CMAKE_VERBOSE_MAKEFILE ON)
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 17)
 
-add_library(react-native-cpp            SHARED
+set (PACKAGE_NAME "react-native-cpp")
+
+set(build_DIR ${CMAKE_SOURCE_DIR}/build)
+
+find_package(ReactAndroid REQUIRED CONFIG)
+
+add_library(${PACKAGE_NAME}
+            SHARED
             ../cpp/react-native-cpp.cpp
             cpp-adapter.cpp
 )
@@ -12,4 +19,10 @@ add_library(react-native-cpp            SHARED
 # Specifies a path to native header files.
 include_directories(
             ../cpp
+            "${NODE_MODULES_DIR}/react-native/ReactCommon"
+)
+
+target_link_libraries(
+  ${PACKAGE_NAME}
+  ReactAndroid::jsi
 )

@@ -1,18 +1,30 @@
 #import "RNJsiModule.h"
+#import <React-callinvoker/ReactCommon/CallInvoker.h>
+#import <React/RCTBridge+Private.h>
+#import <jsi/jsi.h>
+#import <string>
 
 @implementation Cpp
 RCT_EXPORT_MODULE()
 
-// Example method
-// See // https://reactnative.dev/docs/native-modules-ios
-RCT_EXPORT_METHOD(multiply
-                  : (double)a b
-                  : (double)b resolve
-                  : (RCTPromiseResolveBlock)resolve reject
-                  : (RCTPromiseRejectBlock)reject) {
-  NSNumber *result = @(RNJsi::multiply(a, b));
+using namespace facebook;
 
-  resolve(result);
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
+  RCTBridge *bridge = [RCTBridge currentBridge];
+  RCTCxxBridge *cxxBridge = (RCTCxxBridge *)bridge;
+  if (!cxxBridge.runtime) {
+    return @(false);
+  }
+  jsi::Runtime &rt = *(jsi::Runtime *)cxxBridge.runtime;
+
+  try {
+    RNJsi::JsiModuleRegistry::getInstance().install(rt);
+  } catch (std::exception &exc) {
+    NSLog(@"Failed to install C++ modules to Runtime! %s", exc.what());
+    return @(false);
+  }
+
+  return @(true);
 }
 
 // Don't compile this code when we build for the old architecture.

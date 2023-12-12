@@ -1,5 +1,13 @@
-#include "react-native-cpp.h"
+#include "JsiNativeObject.h"
 
 namespace RNJsi {
-double multiply(double a, double b) { return a * b; }
+class TestObject : public JsiNativeObject<TestObject> {
+public:
+  JSI_EXPORT_FUNCTION(TestObject, add) {
+    return args[0].asNumber() + args[1].asNumber();
+  }
+};
+
+JSI_EXPORT_MODULE(TestObject, "TestObject")
+
 } // namespace RNJsi

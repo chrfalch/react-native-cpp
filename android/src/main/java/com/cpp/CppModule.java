@@ -1,12 +1,14 @@
 package com.cpp;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
-import com.facebook.react.bridge.Promise;
+import com.facebook.react.bridge.JavaScriptContextHolder;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactMethod;
 
-public class CppModule extends CppSpec {
+public class CppModule extends com.cpp.CppSpec {
   public static final String NAME = "Cpp";
 
   CppModule(ReactApplicationContext context) {
@@ -23,12 +25,25 @@ public class CppModule extends CppSpec {
     System.loadLibrary("react-native-cpp");
   }
 
-  public static native double nativeMultiply(double a, double b);
+  @ReactMethod(isBlockingSynchronousMethod = true)
+  public boolean install() {
+    try {
+      JavaScriptContextHolder jsContext = getReactApplicationContext().getJavaScriptContextHolder();
 
-  // Example method
-  // See https://reactnative.dev/docs/native-modules-android
-  @ReactMethod
-  public void multiply(double a, double b, Promise promise) {
-    promise.resolve(nativeMultiply(a, b));
+      Log.i(NAME, "Installing JSI Bindings for VisionCamera Tflite plugin...");
+      boolean successful = nativeInstall(jsContext.get());
+      if (successful) {
+        Log.i(NAME, "Successfully installed JSI Bindings!");
+        return true;
+      } else {
+        Log.e(NAME, "Failed to install JSI Bindings for VisionCamera Tflite plugin!");
+        return false;
+      }
+    } catch (Exception exception) {
+      Log.e(NAME, "Failed to install JSI Bindings!", exception);
+      return false;
+    }
   }
+
+  private static native boolean nativeInstall(long jsiPtr);
 }
