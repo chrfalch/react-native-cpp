@@ -30,15 +30,15 @@ private:
 };
 
 #define JSI_EXPORT_MODULE(CLASS, EXPORT_NAME)                                  \
-  _Pragma("clang diagnostic ignored \"-Wunused-variable\"") static struct      \
-      CLASS##Registrar {                                                       \
+  static struct CLASS##Registrar {                                             \
     CLASS##Registrar() {                                                       \
       RNJsi::JsiModuleRegistry::getInstance().registerModule(                  \
           "#EXPORT_NAME", std::bind(&CLASS::install, std::placeholders::_1,    \
                                     EXPORT_NAME, nullptr));                    \
     }                                                                          \
   } CLASS##_registrar;                                                         \
-  static CLASS CLASS##_instance;                                               \
+  _Pragma("clang diagnostic ignored \"-Wunused-variable\"") static CLASS       \
+      CLASS##_instance;                                                        \
   _Pragma("clang diagnostic pop")
 
 } // namespace RNJsi

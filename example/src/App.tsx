@@ -6,7 +6,7 @@ import {} from 'react-native-cpp';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Installed?</Text>
+      <Text>Installed</Text>
     </View>
   );
 }

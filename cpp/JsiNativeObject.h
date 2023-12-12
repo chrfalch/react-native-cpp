@@ -18,7 +18,7 @@ namespace jsi = facebook::jsi;
  name - and can thereafter be instantied from javascript in the following way:
  ```cpp
 
- class MyCalculator: public JsiNativeObject {
+ class MyCalculator: public JsiNativeObject<> {
  public:
    JSI_EXPORT_FUNCTION(MyCalculator, add) {
      return args[0].asNumber() + args[1].asNumber();
@@ -35,7 +35,7 @@ namespace jsi = facebook::jsi;
  const result = myNewObject.add(2, 2); // <- 4
  ```
  */
-template <typename T> class JsiNativeObject : public JsiNativeModule {
+template <typename S = void> class JsiNativeObject : public JsiNativeModule {
 public:
   JSI_EXPORT_FUNCTION(JsiNativeObject, create) {
     // Create our object
@@ -65,6 +65,25 @@ public:
     initializerFunc = func;
   }
 
+protected:
+  static S *getState(jsi::Runtime &rt, const jsi::Value &thisValue) {
+    auto thisObj = thisValue.asObject(rt);
+    if (thisObj.hasNativeState(rt)) {
+      return &thisObj.getNativeState<JsiNativeStateWrapper<S>>(rt)->getValue();
+    }
+    return nullptr;
+  }
+
+  template <class... _Args>
+  static S *make_state(jsi::Runtime &rt, const jsi::Value &thisValue,
+                       _Args &&...__args) {
+    auto thisObj = thisValue.asObject(rt);
+    auto state = std::make_shared<JsiNativeStateWrapper<S>>(
+        std::forward<_Args>(__args)...);
+    thisObj.setNativeState(rt, state);
+    return &state->getValue();
+  }
+
 private:
   static inline jsi::HostFunctionType initializerFunc = nullptr;
 };
@@ -83,131 +102,5 @@ private:
   static jsi::Value initialize_object(jsi::Runtime &rt,                        \
                                       const jsi::Value &thisValue,             \
                                       const jsi::Value *args, size_t count)
-
-/**
- Implements a JsiNativeObject with state of a given type T. State is stored in a
- TypeArray with a c++ ArrayBuffer with the length and memory needed to store T.
- */
-template <typename S>
-class JsiNativeObjectWithState
-    : public JsiNativeObject<JsiNativeObjectWithState<S>> {
-public:
-  static S *getState(jsi::Runtime &rt, const jsi::Value &thisValue) {
-    // Get this as object
-    auto thisObj = thisValue.asObject(rt);
-
-    // Get pointer to data
-    auto memAddr = thisObj.getProperty(
-        rt, jsi::PropNameID::forAscii(rt, PropNameStateMemAddr,
-                                      PropNameStateMemAddrLen));
-
-    return reinterpret_cast<S *>(static_cast<uintptr_t>(memAddr.asNumber()));
-  }
-
-  template <class... _Args>
-  static S *make_state(jsi::Runtime &rt, const jsi::Value &thisValue,
-                       _Args &&...__args) {
-    // Get this as object
-    auto thisObj = thisValue.asObject(rt);
-
-    // Create state
-    auto state =
-        std::make_shared<JsiInstanceBuffer<S>>(std::forward<_Args>(__args)...);
-
-    // Set state and pointer to state on thisValue
-    thisObj.setProperty(
-        rt, jsi::PropNameID::forAscii(rt, PropNameState, PropNameStateLen),
-        jsi::ArrayBuffer(rt, state));
-
-    // Set pointer
-    auto memAddr = reinterpret_cast<uintptr_t>(state.get());
-    thisObj.setProperty(rt,
-                        jsi::PropNameID::forAscii(rt, PropNameStateMemAddr,
-                                                  PropNameStateMemAddrLen),
-                        static_cast<double>(memAddr));
-
-    return reinterpret_cast<S *>(static_cast<uintptr_t>(memAddr));
-  }
-
-private:
-  // Property names
-  static inline const char *PropNameState = "__state__";
-  static inline size_t PropNameStateLen = strlen(PropNameState);
-
-  static inline const char *PropNameStateMemAddr = "__state_addr__";
-  static inline size_t PropNameStateMemAddrLen = strlen(PropNameStateMemAddr);
-};
-
-/**
- Implements a JsiNativeObject with state of a given type T. State is stored
- using the set/getNativeState method of the jsi::Object.
- */
-template <typename S>
-class JsiNativeObjectWithNativeState
-    : public JsiNativeObject<JsiNativeObjectWithNativeState<S>> {
-public:
-  static S *getState(jsi::Runtime &rt, const jsi::Value &thisValue) {
-    auto thisObj = thisValue.asObject(rt);
-    if (thisObj.hasNativeState(rt)) {
-      return &thisObj.getNativeState<JsiNativeStateWrapper<S>>(rt)->getValue();
-    }
-    return nullptr;
-  }
-
-  template <class... _Args>
-  static S *make_state(jsi::Runtime &rt, const jsi::Value &thisValue,
-                       _Args &&...__args) {
-    auto thisObj = thisValue.asObject(rt);
-    auto state = std::make_shared<JsiNativeStateWrapper<S>>(
-        std::forward<_Args>(__args)...);
-    thisObj.setNativeState(rt, state);
-    return &state->getValue();
-  }
-};
-
-/*struct TestObject {
-  TestObject(double x, double y) : x(x), y(y) {}
-  double x;
-  double y;
-};
-
-class JsiStateTestObject : public JsiNativeObjectWithState<TestObject> {
-  JSI_INITIALIZE(JsiStateTestObject) {
-    auto x = args[0].asNumber();
-    auto y = args[1].asNumber();
-    make_state(rt, thisValue, x, y);
-    return jsi::Value::undefined();
-  }
-
-  JSI_EXPORT_FUNCTION(JsiStateTestObject, getX) {
-    auto testObject = getState(rt, thisValue);
-    return testObject->x;
-  }
-
-  JSI_EXPORT_FUNCTION(JsiStateTestObject, getY) {
-    auto testObject = getState(rt, thisValue);
-    return testObject->y;
-  }
-};
-
-class JsiNativeStateTestObject
-    : public JsiNativeObjectWithNativeState<TestObject> {
-  JSI_INITIALIZE(JsiNativeStateTestObject) {
-    auto x = args[0].asNumber();
-    auto y = args[1].asNumber();
-    make_state(rt, thisValue, x, y);
-    return jsi::Value::undefined();
-  }
-
-  JSI_EXPORT_FUNCTION(JsiNativeStateTestObject, getX) {
-    auto testObject = getState(rt, thisValue);
-    return testObject->x;
-  }
-
-  JSI_EXPORT_FUNCTION(JsiNativeStateTestObject, getY) {
-    auto testObject = getState(rt, thisValue);
-    return testObject->y;
-  }
-};*/
 
 } // namespace RNJsi
