@@ -13,6 +13,7 @@ find_package(ReactAndroid REQUIRED CONFIG)
 add_library(${PACKAGE_NAME}
             SHARED
             cpp-adapter.cpp
+            ${CPP_SOURCES}
 )
 
 # Specifies a path to native header files.

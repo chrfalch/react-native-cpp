@@ -1,7 +1,9 @@
 #pragma once
 
 #import <jsi/jsi.h>
+
 #import <map>
+#import <functional>
 
 namespace RNJsi {
 
@@ -30,13 +32,15 @@ private:
 };
 
 #define JSI_EXPORT_MODULE(CLASS, EXPORT_NAME)                                  \
-  static struct CLASS##Registrar {                                             \
+  _Pragma("clang diagnostic ignored \"-Wunused-variable\"") static struct      \
+      CLASS##Registrar {                                                       \
     CLASS##Registrar() {                                                       \
       RNJsi::JsiModuleRegistry::getInstance().registerModule(                  \
-          "#EXPORT_NAME", std::bind(&CLASS::install, std::placeholders::_1,    \
-                                    EXPORT_NAME, nullptr));                    \
+          EXPORT_NAME, std::bind(&CLASS::install, std::placeholders::_1,       \
+                                 EXPORT_NAME, nullptr));                       \
     }                                                                          \
   } CLASS##_registrar;                                                         \
-  static volatile CLASS CLASS##_instance;
+  static volatile CLASS CLASS##_instance;                                      \
+  _Pragma("clang diagnostic pop")
 
 } // namespace RNJsi

@@ -1,3 +1,5 @@
+import groovy.json.JsonSlurper
+
 import java.nio.file.Paths
 
 buildscript {
@@ -55,6 +57,27 @@ static def findNodeModules(baseDir) {
 
 def nodeModules = findNodeModules(projectDir)
 
+static def findCppSource(rootProject) {
+  def basePath = rootProject.projectDir.toPath().normalize()
+
+  // Path to the package.json file (one level up from NODE_MODULES_DIR)
+  def packageJsonFile = rootProject.file("../package.json")
+
+  // Read and parse package.json
+  def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
+
+  // Extract the list of files
+  if (packageJson.nativeDependencies && packageJson.nativeDependencies.cppSources) {
+    return packageJson.nativeDependencies.cppSources.collect { value ->
+      return rootProject.file("../" + value)
+    }.join(";")
+  }
+  return null
+}
+
+def cppSources = findCppSource(rootProject)
+println "Project cppSources: ${cppSources}"
+
 android {
   if (supportsNamespace()) {
     namespace "com.cpp"
@@ -78,6 +101,7 @@ android {
       cmake {
         arguments "-DANDROID_STL=c++_shared",
           "-DNODE_MODULES_DIR=${nodeModules}",
+          "-DCPP_SOURCES=${cppSources}"
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled()}"
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         abiFilters "x86", "x86_64", "armeabi-v7a", "arm64-v8a"

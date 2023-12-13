@@ -6,7 +6,17 @@ import {} from 'react-native-cpp';
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Installed</Text>
+      <Text>Installed:</Text>
+      <Text>{'TestObject: ' + ('TestObject' in globalThis)}</Text>
+      <Text>{'JsiTestObject: ' + ('JsiTestObject' in globalThis)}</Text>
+      <Text>
+        {'JsiStateTestObject: ' + ('JsiStateTestObject' in globalThis)}
+      </Text>
+      {/* <Text>
+        {'JsiStateTestObject state: ' +
+          ('JsiStateTestObject' in globalThis &&
+            (globalThis as any).JsiStateTestObject.create(10, 20).getX())}
+      </Text> */}
     </View>
   );
 }

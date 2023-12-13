@@ -4,7 +4,7 @@
 
 #import <jsi/jsi.h>
 
-#import "JsiModuleRegistry.h"
+#include "JsiModuleRegistry.h"
 
 namespace RNJsi {
 
@@ -65,6 +65,10 @@ public:
   static void registerHostFunction(const std::string &name,
                                    jsi::HostFunctionType func) {
     getHostFunctions().emplace(name, std::move(func));
+  }
+  
+  static void registerInRepository() {
+    
   }
 };
 

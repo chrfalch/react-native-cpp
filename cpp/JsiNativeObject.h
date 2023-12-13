@@ -18,7 +18,7 @@ namespace jsi = facebook::jsi;
  name - and can thereafter be instantied from javascript in the following way:
  ```cpp
 
- class MyCalculator: public JsiNativeObject<> {
+ class MyCalculator: public JsiNativeObject<MyCalculator> {
  public:
    JSI_EXPORT_FUNCTION(MyCalculator, add) {
      return args[0].asNumber() + args[1].asNumber();
@@ -35,7 +35,7 @@ namespace jsi = facebook::jsi;
  const result = myNewObject.add(2, 2); // <- 4
  ```
  */
-template <typename S = void> class JsiNativeObject : public JsiNativeModule {
+template <typename T, typename S = void> class JsiNativeObject : public JsiNativeModule {
 public:
   JSI_EXPORT_FUNCTION(JsiNativeObject, create) {
     // Create our object
