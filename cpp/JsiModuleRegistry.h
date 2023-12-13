@@ -37,8 +37,6 @@ private:
                                     EXPORT_NAME, nullptr));                    \
     }                                                                          \
   } CLASS##_registrar;                                                         \
-  _Pragma("clang diagnostic ignored \"-Wunused-variable\"") static CLASS       \
-      CLASS##_instance;                                                        \
-  _Pragma("clang diagnostic pop")
+  static volatile CLASS CLASS##_instance;
 
 } // namespace RNJsi

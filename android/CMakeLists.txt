@@ -12,7 +12,6 @@ find_package(ReactAndroid REQUIRED CONFIG)
 
 add_library(${PACKAGE_NAME}
             SHARED
-            ../cpp/react-native-cpp.cpp
             cpp-adapter.cpp
 )
 

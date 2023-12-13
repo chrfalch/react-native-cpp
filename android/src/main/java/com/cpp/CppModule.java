@@ -30,13 +30,13 @@ public class CppModule extends com.cpp.CppSpec {
     try {
       JavaScriptContextHolder jsContext = getReactApplicationContext().getJavaScriptContextHolder();
 
-      Log.i(NAME, "Installing JSI Bindings for VisionCamera Tflite plugin...");
+      Log.i(NAME, "Installing JSI Bindings for react-native-cpp plugin...");
       boolean successful = nativeInstall(jsContext.get());
       if (successful) {
         Log.i(NAME, "Successfully installed JSI Bindings!");
         return true;
       } else {
-        Log.e(NAME, "Failed to install JSI Bindings for VisionCamera Tflite plugin!");
+        Log.e(NAME, "Failed to install JSI Bindings for react-native-cpp");
         return false;
       }
     } catch (Exception exception) {

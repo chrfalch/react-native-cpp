@@ -1,6 +1,9 @@
 #include "JsiNativeObject.h"
 
-namespace RNJsi {
+namespace Example {
+
+using namespace RNJsi;
+
 class TestObject : public JsiNativeObject<TestObject> {
 public:
   JSI_EXPORT_FUNCTION(TestObject, add) {

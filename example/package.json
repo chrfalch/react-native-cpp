@@ -24,6 +24,11 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "pod-install": "^0.1.0"
   },
+  "nativeDependencies": {
+    "cppSources": [
+      "cpp/react-native-cpp.cpp"
+    ]
+  },
   "engines": {
     "node": ">=18"
   }
