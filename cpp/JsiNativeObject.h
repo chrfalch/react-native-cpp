@@ -17,6 +17,15 @@ namespace jsi = facebook::jsi;
 template <typename T, typename S = void>
 class JsiNativeObject : public JsiNativeModule<JsiNativeObject<T>> {
 public:
+  /**
+   * Factory HostFunction for creating new objects with the correct
+   * prototype.
+   * @param rt Runtime
+   * @param thisValue This
+   * @param args Arguments
+   * @param count Number of arguments
+   * @return A new jsi::Object with a valid prototype
+   */
   static jsi::Value create(jsi::Runtime &rt, const jsi::Value &thisValue,
                            const jsi::Value *args, size_t count) {
     // Create our object

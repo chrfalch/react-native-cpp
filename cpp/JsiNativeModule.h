@@ -74,7 +74,9 @@ private:
 };
 
 /**
- Implements a simple class for creating static registrars for host functions
+ * Implements a simple utility struct for creating static registrars for host
+ * functions
+ * @tparam T Class to register host function for
  */
 template <typename T> struct JsiHostFunctionRegistrar {
   JsiHostFunctionRegistrar(const std::string &exportName,

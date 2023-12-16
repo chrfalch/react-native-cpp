@@ -36,7 +36,8 @@ private:
 };
 
 /**
- Implements a simple class for creating static registrars for modules
+ * Implements a simple utility struct for creating static registrars for modules
+ * @tparam T Module class
  */
 template <typename T> struct JsiModuleRegistrar {
   JsiModuleRegistrar(std::string exportName) {
