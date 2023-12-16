@@ -9,10 +9,12 @@ set (PACKAGE_NAME "react-native-cpp")
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 
 find_package(ReactAndroid REQUIRED CONFIG)
+find_library(LOG_LIB log)
 
 add_library(${PACKAGE_NAME}
             SHARED
             cpp-adapter.cpp
+            ../cpp/JsiModuleRegistry.cpp
             ${CPP_SOURCES}
 )
 
@@ -25,4 +27,5 @@ include_directories(
 target_link_libraries(
   ${PACKAGE_NAME}
   ReactAndroid::jsi
+  ${LOG_LIB}
 )

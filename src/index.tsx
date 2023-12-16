@@ -28,6 +28,6 @@ export const RNJsiModule = CppModule
 console.log('Installing C++ bindings...');
 const result = RNJsiModule.install() as boolean;
 if (result !== true) {
-  console.error(`Failed to install C++ bindings!`);
+  console.error(`Failed to install JSI bindings`);
 }
-console.log('Successfully installed!');
+console.log('Successfully installed JSI Bindings');

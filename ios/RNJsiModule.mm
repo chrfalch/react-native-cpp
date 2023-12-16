@@ -15,12 +15,11 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(install) {
   if (!cxxBridge.runtime) {
     return @(false);
   }
-  jsi::Runtime &rt = *(jsi::Runtime *)cxxBridge.runtime;
-
   try {
-    RNJsi::JsiModuleRegistry::getInstance().install(rt);
+    RNJsi::JsiModuleRegistry::getInstance().install(
+        *(jsi::Runtime *)cxxBridge.runtime);
   } catch (std::exception &exc) {
-    NSLog(@"Failed to install C++ modules to Runtime! %s", exc.what());
+    NSLog(@"Failed to install JSI Modules in JS runtime: %s", exc.what());
     return @(false);
   }
 

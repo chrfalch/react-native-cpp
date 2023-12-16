@@ -33,10 +33,11 @@
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
     "prepare": "bob build",
     "release": "release-it",
-    "clang-format": "yarn clang-format-ios && yarn clang-format-android && yarn clang-format-common",
+    "clang-format": "yarn clang-format-ios && yarn clang-format-android && yarn clang-format-common && yarn clang-format-example",
     "clang-format-ios": "find ios/ -iname \"*.h\" -o -iname \"*.mm\" -o -iname \"*.cpp\" | xargs clang-format -i",
     "clang-format-android": "find android/src/ -iname \"*.h\" -o -iname \"*.m\" -o -iname \"*.cpp\" | xargs clang-format -i",
-    "clang-format-common": "find cpp/ -iname \"*.h\" -o -iname \"*.m\" -o -iname \"*.cpp\" | xargs clang-format -i"
+    "clang-format-common": "find cpp/ -iname \"*.h\" -o -iname \"*.m\" -o -iname \"*.cpp\" | xargs clang-format -i",
+    "clang-format-example": "find example/cpp/ -iname \"*.h\" -o -iname \"*.m\" -o -iname \"*.cpp\" | xargs clang-format -i"
   },
   "keywords": [
     "react-native",
