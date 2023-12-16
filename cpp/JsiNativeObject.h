@@ -14,7 +14,7 @@ namespace jsi = facebook::jsi;
  Defines the base class for an object with state that can be installed in a
  javascript runtime.
  */
-template <typename T, typename S = void>
+template <typename T, typename S = uintptr_t>
 class JsiNativeObject : public JsiNativeModule<JsiNativeObject<T, S>> {
 public:
   /**
@@ -71,6 +71,17 @@ public:
   }
 
 protected:
+  static S *setState(jsi::Runtime &rt, const jsi::Value &thisValue,
+                     const S &state) {
+    auto thisObj = thisValue.asObject(rt);
+    thisObj.setNativeState(
+        rt, std::make_shared<JsiNativeState<S>>(std::move(state)));
+    // TODO: when hermes supports setExternalMemoryPressure we need
+    // to add sizeof(T) + any internal stuff - maybe create some kind of
+    // api for this.
+    return &state->getValue();
+  }
+
   template <class... _Args>
   static S *make_state(jsi::Runtime &rt, const jsi::Value &thisValue,
                        _Args &&...__args) {
@@ -78,6 +89,9 @@ protected:
     auto state =
         std::make_shared<JsiNativeState<S>>(std::forward<_Args>(__args)...);
     thisObj.setNativeState(rt, state);
+    // TODO: when hermes supports setExternalMemoryPressure we need
+    // to add sizeof(T) + any internal stuff - maybe create some kind of
+    // api for this.
     return &state->getValue();
   }
 

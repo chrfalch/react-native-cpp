@@ -25,8 +25,8 @@
     "pod-install": "^0.1.0"
   },
   "nativeDependencies": {
-    "cppSources": [
-      "cpp/test-api.cpp"
+    "sources": [
+      "cpp/test-api.h"
     ]
   },
   "engines": {

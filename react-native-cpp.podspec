@@ -20,31 +20,34 @@ Pod::Spec.new do |s|
   # Resolve RN Project path
   app_path = ENV["APP_PATH"]
   if app_path
-    puts "react-native-cpp:"
-    puts "RN Project path:", app_path
     package_json_path = File.join(app_path, 'package.json')
     if File.exist?(package_json_path)
       # Read and parse the package.json file
       package_json = JSON.parse(File.read(package_json_path))
-      puts "Found Project package.json"
       # Check if 'nativeDependencies' and 'cppSources' are present
-      if package_json['nativeDependencies'] && package_json['nativeDependencies']['cppSources']
-        # Extract the C++ source file paths
-        cpp_sources = package_json['nativeDependencies']['cppSources']
-        # Check if cppSources is an array
-        if cpp_sources.is_a?(Array)
-          puts "Found nativeDependencies.cppSources in package.json"
-          puts "Adding C++ sources to podspec:"
-          puts cpp_sources
-          # Assuming package_json_path is a string representing the root path
-          library_pathname = Pathname.new(Dir.pwd)
-          # Convert each path in cpp_sources to a relative path
-          relative_cpp_sources = cpp_sources.map do |path|
-            full_path = Pathname.new(File.join(app_path, path))
-            full_path.relative_path_from(library_pathname).to_s            
-          end          
-          # Include the C++ source files
-          s.source_files = ["ios/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}", relative_cpp_sources].flatten         
+      if package_json['nativeDependencies'] && package_json['nativeDependencies']['sources']
+        # Create a new file in the library folder that should contain includes for the native files
+        File.open(File.join(Dir.pwd, "ios", "react-native-cpp-includes.h"), "w") do |file|
+          # Extract the C++ source file paths
+          sources = package_json['nativeDependencies']['sources']
+          # Check if sources is an array
+          if sources.is_a?(Array)
+            puts "Including/adding the following C++ sources to podspec:"
+            puts sources
+            # Assuming package_json_path is a string representing the root path
+            library_pathname = Pathname.new(Dir.pwd)
+            # Convert each path in sources to a relative path
+            relative_sources = sources.map do |path|
+              full_path = Pathname.new(File.join(app_path, path))
+              full_path.relative_path_from(library_pathname).to_s              
+            end          
+            # Add the includes to the file
+            relative_sources.each do |path|
+              file.puts("#include \"#{File.basename(path)}\"")
+            end
+            # Include with the source files
+            s.source_files = ["ios/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}", relative_sources].flatten                      
+          end
         end
       end
     end
