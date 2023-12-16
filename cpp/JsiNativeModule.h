@@ -57,10 +57,10 @@ public:
    * @param func Function to export
    */
   static void registerHostFunction(const std::string &name,
-                                   jsi::HostFunctionType func) {
+                                   const jsi::HostFunctionType &func) {
     JsiLogger::logToConsole("JsiNativeModule: Installing host function %s",
                             name.c_str());
-    getHostFunctions().emplace(std::move(name), std::move(func));
+    getHostFunctions().emplace(name, func);
   }
 
 private:
@@ -80,9 +80,29 @@ private:
  */
 template <typename T> struct JsiHostFunctionRegistrar {
   JsiHostFunctionRegistrar(const std::string &exportName,
-                           jsi::HostFunctionType func) {
-    T::registerHostFunction(std::move(exportName), func);
+                           const jsi::HostFunctionType &func) {
+    T::registerHostFunction(exportName, func);
   }
 };
+
+#define JSI_HOST_FUNCTION(CLASS, METHOD, FUNC)                                 \
+  static inline struct METHOD##_registrar {                                    \
+    METHOD##_registrar() {                                                     \
+      CLASS::registerHostFunction(                                             \
+          #METHOD, [](jsi::Runtime & rt, const jsi::Value &thisValue,          \
+                      const jsi::Value *args, size_t count) FUNC);             \
+    }                                                                          \
+  } METHOD##_registrar__;
+
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+// TESTS
+/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+
+class MyJsiTestModule : public JsiNativeModule<MyJsiTestModule> {
+public:
+  JSI_HOST_FUNCTION(MyJsiTestModule, return_200, { return 200; })
+};
+
+JSI_EXPORT_MODULE(MyJsiTestModule, "JsiTestModule")
 
 } // namespace RNJsi

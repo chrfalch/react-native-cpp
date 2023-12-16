@@ -25,14 +25,37 @@ export default function App() {
             ? Object.keys(globalThis['JsiStateTestObject'])
             : false)}
       </Text>
+
       <Text>
-        {'__TEST__: ' +
-          ('__TEST__' in globalThis
+        {'__JsiTestModule: ' +
+          ('__JsiTestModule' in globalThis
             ? '[' +
-              Object.keys(globalThis['__TEST__']) +
+              Object.keys(globalThis['__JsiTestModule']) +
               ']' +
               ', ' +
-              globalThis['__TEST__'].create().return_100()
+              globalThis['__JsiTestModule'].return_200()
+            : false)}
+      </Text>
+
+      <Text>
+        {'__JsiTestObject: ' +
+          ('__JsiTestObject' in globalThis
+            ? '[' +
+              Object.keys(globalThis['__JsiTestObject']) +
+              ']' +
+              ', ' +
+              globalThis['__JsiTestObject'].create().return_100()
+            : false)}
+      </Text>
+
+      <Text>
+        {'__JsiStateObject: ' +
+          ('__JsiStateObject' in globalThis
+            ? '[' +
+              Object.keys(globalThis['__JsiStateObject']) +
+              ']' +
+              ', ' +
+              globalThis['__JsiStateObject'].create(50, 100).area()
             : false)}
       </Text>
       {/* <Text>

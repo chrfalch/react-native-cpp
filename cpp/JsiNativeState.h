@@ -6,13 +6,13 @@ namespace RNJsi {
 
 namespace jsi = facebook::jsi;
 
-template <typename S> class JsiNativeStateWrapper : public jsi::NativeState {
+template <typename S> class JsiNativeState : public jsi::NativeState {
 public:
-  JsiNativeStateWrapper(const S &value) : _value(std::move(value)) {}
+  JsiNativeState(const S &value) : _value(std::move(value)) {}
   template <class... _Args>
-  JsiNativeStateWrapper(_Args &&...__args)
-      : _value(std::forward<_Args>(__args)...) {}
-  ~JsiNativeStateWrapper() {}
+  JsiNativeState(_Args &&...__args) : _value(std::forward<_Args>(__args)...) {}
+
+  ~JsiNativeState() {}
   S &getValue() { return _value; }
 
 private:
