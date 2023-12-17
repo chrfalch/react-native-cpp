@@ -14,6 +14,7 @@ find_library(LOG_LIB log)
 add_library(${PACKAGE_NAME}
             SHARED
             cpp-adapter.cpp
+            ${CPP_FILES}
             ../cpp/JsiModuleRegistry.cpp
 )
 

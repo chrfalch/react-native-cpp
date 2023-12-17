@@ -82,6 +82,8 @@ static def generateIncludeFile(rootProject, project) {
     }
     // Define set to create unique directories
     Set<Object> unique_dirs = new HashSet<>()
+    Set<Object> cpp_files = new HashSet<>()
+
     // Write elements to the file
     include_files.each { file ->
       def pathBase = rootProject.projectDir.toPath()
@@ -89,22 +91,34 @@ static def generateIncludeFile(rootProject, project) {
       String relativePath = pathBase.relativize(pathAbsolute)
       def includes = rootProject.fileTree(dir: "..", includes: [relativePath])
       includes.each { include ->
-        println("react-native-cpp: ${include}")
-        generated_include.append("#import \"${include.getName()}\"\n") // Appends each element on a new line
+        String fileName = include.getName();
+        String extension = "";
+        int i = fileName.lastIndexOf('.');
+        if (i >= 0) {
+          extension = fileName.substring(i + 1);
+        }
+        if (extension == "h"|| extension == "hpp") {
+          println("react-native-cpp: ${include}")
+          generated_include.append("#import \"${fileName}\"\n") // Appends each element on a new line
+        } else {
+          cpp_files.add(include)
+        }
         unique_dirs.add(include.parentFile.path)
       }
     }
     println("react-native-cpp: Generated react-native-cpp-includes.h")
     // Now let's return the unique directories we found
     println("react-native-cpp: Include directories ${unique_dirs.join(";")}")
-    return unique_dirs.join(";")
+    println("react-native-cpp: Cpp files ${cpp_files.join(";")}")
+    return [unique_dirs.join(";"), cpp_files.join(";")]
   }
-  return "."
+  return [".", ""]
 }
 
 
-def includeDirectories = generateIncludeFile(rootProject, project)
-println("Include directories: ${includeDirectories}")
+def results = generateIncludeFile(rootProject, project)
+def includeDirectories = results[0]
+def cppFiles = results[1]
 
 android {
   if (supportsNamespace()) {
@@ -130,6 +144,7 @@ android {
         arguments "-DANDROID_STL=c++_shared",
           "-DNODE_MODULES_DIR=${nodeModules}",
           "-DCPP_INCLUDE_DIRS=${includeDirectories}",
+          "-DCPP_FILES=${cppFiles}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled()}"
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         abiFilters "x86", "x86_64", "armeabi-v7a", "arm64-v8a"

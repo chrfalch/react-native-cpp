@@ -46,7 +46,9 @@ Pod::Spec.new do |s|
               include_files = Dir.glob(path)
               include_files.each do |include_file|
                 puts include_file
-                file.puts("#import \"#{File.basename(include_file)}\"")
+                if File.extname(include_file) == ".h" || File.extname(include_file) == ".hpp"
+                  file.puts("#import \"#{File.basename(include_file)}\"")
+                end
               end
             end
             # Include with the source files

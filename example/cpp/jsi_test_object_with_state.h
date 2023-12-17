@@ -1,3 +1,5 @@
+#pragma once
+
 #include "RNJsi.h"
 
 namespace Example {
