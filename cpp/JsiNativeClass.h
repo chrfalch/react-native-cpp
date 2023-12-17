@@ -123,13 +123,12 @@ template <typename T> struct JsiNativeClassRegistrar {
 #define JSI_CLASS1(CLASS) class CLASS : public JsiNativeClass<CLASS>
 
 #define JSI_CLASS2(CLASS, STATE)                                               \
-  class CLASS;\
-  JSI_EXPORT_CLASS(CLASS) \
+  class CLASS;                                                                 \
+  JSI_EXPORT_CLASS(CLASS)                                                      \
   class CLASS : public JsiNativeClass<CLASS, STATE>
 
-#define JSI_EXPORT_CLASS(CLASS)                                   \
-  static JsiNativeClassRegistrar<CLASS> CLASS##_METHOD##_registrar(           \
-    #CLASS);
+#define JSI_EXPORT_CLASS(CLASS)                                                \
+  static JsiNativeClassRegistrar<CLASS> CLASS##_METHOD##_registrar(#CLASS);
 
 /**
  * Implements a simple utility struct for creating static registrars for

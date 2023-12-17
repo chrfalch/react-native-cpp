@@ -14,5 +14,4 @@ public:
   JSI_HOST_FUNCTION(TestModule, add, &TestModule::add_function);
 };
 
-
 } // namespace Example

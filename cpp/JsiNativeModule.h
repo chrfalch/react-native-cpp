@@ -85,10 +85,10 @@ template <typename T> struct JsiHostFunctionRegistrar {
   }
 };
 
-#define JSI_MODULE(MODULE) \
-class MODULE; \
-JSI_EXPORT_MODULE(MODULE) \
-class MODULE : public JsiNativeModule<MODULE>
+#define JSI_MODULE(MODULE)                                                     \
+  class MODULE;                                                                \
+  JSI_EXPORT_MODULE(MODULE)                                                    \
+  class MODULE : public JsiNativeModule<MODULE>
 
 #define JSI_HOST_FUNCTION(CLASS, METHOD, FUNC)                                 \
   [[maybe_unused]] static inline JsiHostFunctionRegistrar<CLASS>               \
