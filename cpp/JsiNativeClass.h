@@ -120,7 +120,10 @@ template <typename T> struct JsiNativeClassRegistrar {
 #define JSI_CLASS(...)                                                         \
   GET_MACRO(__VA_ARGS__, JSI_CLASS2, JSI_CLASS1)(__VA_ARGS__)
 
-#define JSI_CLASS1(CLASS) class CLASS : public JsiNativeClass<CLASS>
+#define JSI_CLASS1(CLASS)                                                      \
+  class CLASS;                                                                 \
+  JSI_EXPORT_CLASS(CLASS)                                                      \
+  class CLASS : public JsiNativeClass<CLASS>
 
 #define JSI_CLASS2(CLASS, STATE)                                               \
   class CLASS;                                                                 \

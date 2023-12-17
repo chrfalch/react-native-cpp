@@ -16,21 +16,23 @@ export default function App() {
             : false)}
       </Text>
       <Text>
-        {'JsiTestObject: ' +
-          ('JsiTestObject' in globalThis
-            ? `[${Object.keys(globalThis['JsiTestObject'])}] = ${globalThis[
-                'JsiTestObject'
+        {'JsiTestClass: ' +
+          ('JsiTestClass' in globalThis
+            ? `[${Object.keys(globalThis['JsiTestClass'])}] = ${globalThis[
+                'JsiTestClass'
               ]
                 .create()
                 .getX()}`
             : false)}
       </Text>
       <Text>
-        {'JsiStateTestObject: ' +
-          ('JsiStateTestObject' in globalThis
-            ? `[${Object.keys(
-                globalThis['JsiStateTestObject']
-              )}] = ${globalThis['JsiStateTestObject'].create(10, 20).getX()}`
+        {'JsiStateTestClass: ' +
+          ('JsiStateTestClass' in globalThis
+            ? `[${Object.keys(globalThis['JsiStateTestClass'])}] = ${globalThis[
+                'JsiStateTestClass'
+              ]
+                .create(10, 20)
+                .getX()}`
             : false)}
       </Text>
     </View>
