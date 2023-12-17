@@ -5,7 +5,7 @@ import 'react-native-cpp';
 import '../cpp/types';
 
 import { createTest } from './tests';
-import { TestSection } from './components';
+import { T, TestSection } from './components';
 
 const getX = () => 22;
 
@@ -15,7 +15,8 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Button title="Run" onPress={() => setCounter((p) => p + 1)} />
+      <T.Header>{`Running in ${__DEV__ ? 'DEBUG' : 'RELEASE'} mode`}</T.Header>
+      <Button title="▶️ Run" onPress={() => setCounter((p) => p + 1)} />
       <TestSection
         title="Call Method"
         example="() => return getX()"
