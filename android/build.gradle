@@ -57,7 +57,7 @@ static def findNodeModules(baseDir) {
 
 def nodeModules = findNodeModules(projectDir)
 
-static def findCppSource(rootProject) {
+static def generateIncludeFile(rootProject, project) {
   def basePath = rootProject.projectDir.toPath().normalize()
 
   // Path to the package.json file (one level up from NODE_MODULES_DIR)
@@ -66,17 +66,37 @@ static def findCppSource(rootProject) {
   // Read and parse package.json
   def packageJson = new JsonSlurper().parseText(packageJsonFile.text)
 
+  // Delete/reset the generated include file
+  def generated_include = new File(project.projectDir, 'react-native-cpp-includes.h')
+  println("Recreating include file: ${generated_include.getPath()}")
+  generated_include.delete()
+
   // Extract the list of files
-  if (packageJson.nativeDependencies && packageJson.nativeDependencies.cppSources) {
-    return packageJson.nativeDependencies.cppSources.collect { value ->
+  if (packageJson.nativeDependencies && packageJson.nativeDependencies.sources) {
+    // Convert to full paths from project dir
+    def include_files = packageJson.nativeDependencies.sources.collect { value ->
       return rootProject.file("../" + value)
-    }.join(";")
+    }
+    // Recreate the output header file
+    generated_include.createNewFile()
+    // Write elements to the file
+    include_files.each { include ->
+      generated_include.append("#import \"${include.getName()}\"\n") // Appends each element on a new line
+    }
+    println("react-native-cpp: Created react-native-cpp-includes.h")
+    // Now let's create a map of the include directories used.
+    def uniqueDirs = include_files.collect {
+      it.parentFile.path
+    }.toSet()
+
+    return uniqueDirs.join(";")
   }
-  return null
+  return "."
 }
 
-def cppSources = findCppSource(rootProject)
-println "Project cppSources: ${cppSources}"
+
+def includeDirectories = generateIncludeFile(rootProject, project)
+println("Include directories: ${includeDirectories}")
 
 android {
   if (supportsNamespace()) {
@@ -101,7 +121,7 @@ android {
       cmake {
         arguments "-DANDROID_STL=c++_shared",
           "-DNODE_MODULES_DIR=${nodeModules}",
-          "-DCPP_SOURCES=${cppSources}"
+          "-DCPP_INCLUDE_DIRS=${includeDirectories}",
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled()}"
         cppFlags "-O2 -frtti -fexceptions -Wall -fstack-protector-all"
         abiFilters "x86", "x86_64", "armeabi-v7a", "arm64-v8a"

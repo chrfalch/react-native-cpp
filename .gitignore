@@ -68,6 +68,9 @@ android/keystores/debug.keystore
 !.yarn/sdks
 !.yarn/versions
 
+# Generated code
+react-native-cpp-includes.h
+
 # Expo
 .expo/
 

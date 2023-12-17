@@ -15,12 +15,12 @@ add_library(${PACKAGE_NAME}
             SHARED
             cpp-adapter.cpp
             ../cpp/JsiModuleRegistry.cpp
-            ${CPP_SOURCES}
 )
 
 # Specifies a path to native header files.
 include_directories(
             ../cpp
+            "${CPP_INCLUDE_DIRS}"
             "${NODE_MODULES_DIR}/react-native/ReactCommon"
 )
 

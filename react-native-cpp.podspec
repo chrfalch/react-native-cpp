@@ -43,7 +43,7 @@ Pod::Spec.new do |s|
             end          
             # Add the includes to the file
             relative_sources.each do |path|
-              file.puts("#include \"#{File.basename(path)}\"")
+              file.puts("#import \"#{File.basename(path)}\"")
             end
             # Include with the source files
             s.source_files = ["ios/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}", relative_sources].flatten                      
