@@ -43,8 +43,8 @@ public:
         thisValue);
 
     // Call initializer if it exists
-    if (*getInitialiser()) {
-      (*getInitialiser())(rt, jsi::Value(rt, result), args, count);
+    if (*getInitializer()) {
+      (*getInitializer())(rt, jsi::Value(rt, result), args, count);
     }
 
     // Return our new object
@@ -54,12 +54,12 @@ public:
   /**
    * Sets the jsi::HostFunctionType that should be called for newly created
    * objects.
-   * @param initialiserFunction Function to store as initialiser for this
+   * @param initializerFunction Function to store as initializer for this
    * specalisation.
    */
   static void
-  setInitialiserFunction(const jsi::HostFunctionType &initialiserFunction) {
-    *getInitialiser() = initialiserFunction;
+  setInitializerFunction(const jsi::HostFunctionType &initializerFunction) {
+    *getInitializer() = initializerFunction;
   }
 
   static S *getState(jsi::Runtime &rt, const jsi::Value &thisValue) {
@@ -95,9 +95,9 @@ protected:
     return &state->getValue();
   }
 
-  static jsi::HostFunctionType *getInitialiser() {
-    static jsi::HostFunctionType initialiser = nullptr;
-    return &initialiser;
+  static jsi::HostFunctionType *getInitializer() {
+    static jsi::HostFunctionType initializer = nullptr;
+    return &initializer;
   }
 };
 
@@ -120,14 +120,14 @@ template <typename T> struct JsiNativeObjectRegistrar {
   static JsiNativeObjectRegistrar<CLASS> CLASS##_METHOD##_registrar(           \
       EXPORT_NAME);
 
-#define JSI_INITIALISER(CLASS, FUNC)                                           \
-  static inline struct initialiser_registrar {                                 \
-    initialiser_registrar() {                                                  \
-      CLASS::setInitialiserFunction(                                           \
+#define JSI_INITIALIZER(CLASS, FUNC)                                           \
+  static inline struct initializer_registrar {                                 \
+    initializer_registrar() {                                                  \
+      CLASS::setInitializerFunction(                                           \
           [](jsi::Runtime & rt, const jsi::Value &thisValue,                   \
              const jsi::Value *args, size_t count) FUNC);                      \
     }                                                                          \
-  } initialiser_registrar__;
+  } initializer_registrar__;
 
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 // TESTS
@@ -149,10 +149,10 @@ struct TestState {
 class MyJsiStateTestClass
     : public JsiNativeObject<MyJsiStateTestClass, TestState> {
 public:
-  JSI_INITIALISER(MyJsiStateTestClass, {
-    make_state(rt, thisValue, args[0].asNumber(), args[1].asNumber());
-    return jsi::Value::undefined();
-  });
+    JSI_INITIALIZER(MyJsiStateTestClass, {
+      make_state(rt, thisValue, args[0].asNumber(), args[1].asNumber());
+      return jsi::Value::undefined();
+    });
 
   JSI_HOST_FUNCTION(MyJsiStateTestClass, area, {
     auto s = getState(rt, thisValue);
