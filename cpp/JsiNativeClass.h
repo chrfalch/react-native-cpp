@@ -15,7 +15,7 @@ namespace jsi = facebook::jsi;
  javascript runtime.
  */
 template <typename T, typename S = uintptr_t>
-class JsiNativeObject : public JsiNativeModule<JsiNativeObject<T, S>> {
+class JsiNativeClass : public JsiNativeModule<JsiNativeClass<T, S>> {
 public:
   /**
    * Factory HostFunction for creating new objects with the correct
@@ -116,7 +116,7 @@ template <typename T> struct JsiNativeObjectRegistrar {
   }
 };
 
-#define JSI_EXPORT_OBJECT(CLASS, EXPORT_NAME)                                  \
+#define JSI_EXPORT_CLASS(CLASS, EXPORT_NAME)                                   \
   static JsiNativeObjectRegistrar<CLASS> CLASS##_METHOD##_registrar(           \
       EXPORT_NAME);
 

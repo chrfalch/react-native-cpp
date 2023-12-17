@@ -1,6 +1,6 @@
 #import "JsiModuleRegistry.h"
 #import "JsiLogger.h"
-#import "JsiNativeObject.h"
+#import "JsiNativeClass.h"
 
 namespace RNJsi {
 
