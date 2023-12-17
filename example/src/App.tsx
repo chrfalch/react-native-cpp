@@ -8,10 +8,10 @@ export default function App() {
     <View style={styles.container}>
       <Text>Installed:</Text>
       <Text>
-        {'TestObject: ' +
-          ('TestObject' in globalThis
-            ? `[${Object.keys(globalThis['TestObject'])}] = ${globalThis[
-                'TestObject'
+        {'TestModule: ' +
+          ('TestModule' in globalThis
+            ? `[${Object.keys(globalThis['TestModule'])}] = ${globalThis[
+                'TestModule'
               ].add(2, 2)}`
             : false)}
       </Text>
