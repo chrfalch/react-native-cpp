@@ -1,5 +1,5 @@
 export interface TestModule {
-  add(x: number, y: number): number;
+  getX(): number;
 }
 
 export interface JsiTestClass {
@@ -12,8 +12,13 @@ export interface JsiStateTestClass {
   getY(): number;
 }
 
+export interface SimpleJsiHostObject {
+  getX(): number;
+}
+
 declare global {
   var TestModule: TestModule;
+  var SimpleJsiHostObject: () => SimpleJsiHostObject;
   var JsiTestClass: { create(): JsiTestClass };
   var JsiStateTestClass: { create(x: number, y: number): JsiStateTestClass };
 }

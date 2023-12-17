@@ -27,7 +27,7 @@
   "nativeDependencies": {
     "sources": [
       "cpp/*.h",
-      "cpp/api/test_module.*"
+      "cpp/api/*"
     ]
   },
   "engines": {

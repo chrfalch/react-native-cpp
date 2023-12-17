@@ -54,5 +54,6 @@ template <typename T> struct JsiModuleRegistrar {
 
 #define JSI_EXPORT_MODULE(CLASS)                                               \
   static JsiModuleRegistrar<CLASS> __attribute__((used))                       \
-  initialize_CLASS##__(#CLASS);
+  CLASS##_registrar(#CLASS);
+
 } // namespace RNJsi
