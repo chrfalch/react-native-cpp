@@ -12,8 +12,7 @@ struct StateTestObject {
   double y;
 };
 
-class JsiStateTestObject
-    : public JsiNativeClass<JsiStateTestObject, StateTestObject> {
+JSI_CLASS(JsiStateTestObject, StateTestObject) {
   JSI_INITIALIZER(
       JsiStateTestObject, JSI_FUNCTION {
         make_state(rt, thisValue, args[0].asNumber(), args[1].asNumber());
@@ -32,7 +31,5 @@ class JsiStateTestObject
         return testObject->y;
       });
 };
-
-JSI_EXPORT_CLASS(JsiStateTestObject, "JsiStateTestObject")
 
 } // namespace Example

@@ -104,8 +104,8 @@ protected:
 /**
  Implements a utility for creating static registrars for objects
  */
-template <typename T> struct JsiNativeObjectRegistrar {
-  JsiNativeObjectRegistrar(std::string exportName) {
+template <typename T> struct JsiNativeClassRegistrar {
+  JsiNativeClassRegistrar(std::string exportName) {
     // Register module with module registry
     RNJsi::JsiModuleRegistry::getInstance().registerModule(
         exportName,
@@ -116,9 +116,20 @@ template <typename T> struct JsiNativeObjectRegistrar {
   }
 };
 
-#define JSI_EXPORT_CLASS(CLASS, EXPORT_NAME)                                   \
-  static JsiNativeObjectRegistrar<CLASS> CLASS##_METHOD##_registrar(           \
-      EXPORT_NAME);
+#define GET_MACRO(_1, _2, NAME, ...) NAME
+#define JSI_CLASS(...)                                                         \
+  GET_MACRO(__VA_ARGS__, JSI_CLASS2, JSI_CLASS1)(__VA_ARGS__)
+
+#define JSI_CLASS1(CLASS) class CLASS : public JsiNativeClass<CLASS>
+
+#define JSI_CLASS2(CLASS, STATE)                                               \
+  class CLASS;\
+  JSI_EXPORT_CLASS(CLASS) \
+  class CLASS : public JsiNativeClass<CLASS, STATE>
+
+#define JSI_EXPORT_CLASS(CLASS)                                   \
+  static JsiNativeClassRegistrar<CLASS> CLASS##_METHOD##_registrar(           \
+    #CLASS);
 
 /**
  * Implements a simple utility struct for creating static registrars for

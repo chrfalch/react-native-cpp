@@ -52,7 +52,7 @@ template <typename T> struct JsiModuleRegistrar {
   [](jsi::Runtime & rt, const jsi::Value &thisValue, const jsi::Value *args,   \
      size_t count)
 
-#define JSI_EXPORT_MODULE(CLASS, EXPORT_NAME)                                  \
+#define JSI_EXPORT_MODULE(CLASS)                                  \
   static JsiModuleRegistrar<CLASS> __attribute__((used))                       \
-  initialize_testObject__(EXPORT_NAME);
+  initialize_CLASS##__(#CLASS);
 } // namespace RNJsi
