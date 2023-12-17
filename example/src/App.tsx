@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, SafeAreaView, Button, View } from 'react-native';
+import { StyleSheet, SafeAreaView, Button, ScrollView } from 'react-native';
 
 import 'react-native-cpp';
 import '../cpp/types';
@@ -18,7 +18,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
+      <ScrollView style={styles.content}>
         <T.Small>{`Running in ${__DEV__ ? 'DEBUG' : 'RELEASE'} mode`}</T.Small>
         <Button title="▶️ Run" onPress={() => setCounter((p) => p + 1)} />
         <TestSection
@@ -64,7 +64,7 @@ export default function App() {
           {'JsiStateTestClass: ' +
             ('JsiStateTestClass' in globalThis ? true : false)}
         </T.Note>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

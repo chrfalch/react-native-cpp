@@ -27,9 +27,9 @@ export const TestSection: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <Horizontal>
-        <T.Header>{title}</T.Header>
+        <T.Header>{`🔵 ${title}`}</T.Header>
         <Flex />
-        <T.Small>🧪 </T.Small>
+        <T.Body>🧪 </T.Body>
       </Horizontal>
       <T.Code>{example}</T.Code>
       <Spacer />
@@ -47,10 +47,14 @@ export const TestSection: React.FC<Props> = ({
             index > 0
               ? (result.avg - results[0]!.avg).toFixed(DECIMALS)
               : spaces(DECIMALS) + ' -'
-          } ms  ${toFixed(
-            ((result.avg - results[0]!.avg) / results[0]!.avg) * 100,
-            1
-          )}%    ${result.name}`}</T.Fixed>
+          } ms  ${
+            index > 0
+              ? toFixed(
+                  ((result.avg - results[0]!.avg) / results[0]!.avg) * 100,
+                  1
+                ) + '%'
+              : spaces(DECIMALS) + ' '
+          }    ${result.name}`}</T.Fixed>
         </React.Fragment>
       ))}
     </View>

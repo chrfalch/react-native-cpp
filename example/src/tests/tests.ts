@@ -16,7 +16,7 @@ export const create_object = [
   createTest('c++ state', () => {
     globalThis.JsiStateTestClass.create();
   }),
-  createTest('c++ jsi::HostObject', () => {
+  createTest('jsi::HostObject', () => {
     globalThis.SimpleJsiHostObject();
   }),
   createTest('js', () => {
@@ -43,7 +43,7 @@ export const call_method_on_class_or_object = [
     }
   ),
   createTest(
-    'c++ jsi::HostObject',
+    'jsi::HostObject',
     (obj: any) => {
       return obj.getX();
     },
