@@ -15,7 +15,7 @@ struct StateTestObject {
 JSI_CLASS(JsiStateTestClass, StateTestObject) {
   JSI_INITIALIZER(
       JsiStateTestClass, JSI_FUNCTION {
-        make_state(rt, thisValue, args[0].asNumber(), args[1].asNumber());
+        make_state(rt, thisValue, 22, 22);
         return jsi::Value::undefined();
       });
 

@@ -34,7 +34,7 @@ public:
     // Property names
     static const char *PropNamePrototype = "__proto__";
     static size_t PropNamePrototypeLen = strlen(PropNamePrototype);
-
+    
     // Set prototype - we'll set ourselves as the prototype since
     // we can then define methods on ourselves later
     result.setProperty(

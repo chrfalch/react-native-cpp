@@ -20,5 +20,5 @@ declare global {
   var TestModule: TestModule;
   var SimpleJsiHostObject: () => SimpleJsiHostObject;
   var JsiTestClass: { create(): JsiTestClass };
-  var JsiStateTestClass: { create(x: number, y: number): JsiStateTestClass };
+  var JsiStateTestClass: { create(): JsiStateTestClass };
 }

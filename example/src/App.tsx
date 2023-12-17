@@ -4,12 +4,15 @@ import { StyleSheet, SafeAreaView, Button, View } from 'react-native';
 import 'react-native-cpp';
 import '../cpp/types';
 
-import { createTest } from './tests';
+import {
+  call_method_on_class_or_object,
+  call_method_on_class_or_object_with_state,
+  call_method_on_module,
+  create_object,
+} from './tests';
 import { T, TestSection } from './components';
 
-const getX = () => 22;
-
-const REPEAT = 1000;
+const REPEAT = 10000;
 export default function App() {
   const [_, setCounter] = React.useState(0);
 
@@ -22,78 +25,28 @@ export default function App() {
           title="Call Method"
           example="() => return getX()"
           repeat={REPEAT}
-          tests={[
-            createTest('c++', () => globalThis.TestModule.getX(), {
-              expect: 22,
-            }),
-            createTest('js', () => getX(), { expect: 22 }),
-          ]}
+          tests={call_method_on_module}
         />
 
         <TestSection
           title="Create Objects"
           repeat={REPEAT}
           example="new SometClass()"
-          tests={[
-            createTest('c++', () => {
-              globalThis.JsiTestClass.create();
-            }),
-            createTest('c++ jsi::HostObject', () => {
-              globalThis.SimpleJsiHostObject();
-            }),
-            createTest('js', () => {
-              const state = { x: 0 };
-              return {
-                getX() {
-                  return state.x;
-                },
-              };
-            }),
-          ]}
+          tests={create_object}
         />
 
         <TestSection
           title="Call Method on object"
           example="obj.getX()"
           repeat={REPEAT}
-          tests={[
-            createTest(
-              'c++',
-              (obj: any) => {
-                return obj.getX();
-              },
-              {
-                expect: 22,
-                before: () => {
-                  return JsiTestClass.create();
-                },
-              }
-            ),
-            createTest(
-              'c++ jsi::HostObject',
-              (obj: any) => {
-                return obj.getX();
-              },
-              {
-                expect: 22,
-                before: () => {
-                  return SimpleJsiHostObject();
-                },
-              }
-            ),
-            createTest(
-              'js',
-              (obj: any) => {
-                return obj.getX();
-              },
-              {
-                expect: 10,
-                before: () => {
-                  return { getX: () => 10 };
-                },
-              }
-            ),
-          ]}
+          tests={call_method_on_class_or_object}
+        />
+
+        <TestSection
+          title="Call Method on state object"
+          example="obj.getX(), where result value is stored in obj"
+          repeat={REPEAT}
+          tests={call_method_on_class_or_object_with_state}
         />
 
         <T.Small>Installed:</T.Small>

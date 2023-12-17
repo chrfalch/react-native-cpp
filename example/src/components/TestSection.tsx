@@ -39,7 +39,7 @@ export const TestSection: React.FC<Props> = ({
           spaces(DECIMALS) +
           '    diff' +
           spaces(DECIMALS) +
-          '   inc      type'}
+          '   inc       type'}
       </T.FixedBold>
       {results.map((result, index) => (
         <React.Fragment key={result.name}>
@@ -48,7 +48,7 @@ export const TestSection: React.FC<Props> = ({
               ? (result.avg - results[0]!.avg).toFixed(DECIMALS)
               : spaces(DECIMALS) + ' -'
           } ms  ${toFixed(
-            ((result.avg - results[0]!.avg) / result.avg) * 100,
+            ((result.avg - results[0]!.avg) / results[0]!.avg) * 100,
             1
           )}%    ${result.name}`}</T.Fixed>
         </React.Fragment>
@@ -62,7 +62,7 @@ const toFixed = (n: number, decimals: number) => {
   return n
     .toFixed(decimals)
     .toString()
-    .padStart(decimals + 3, ' ');
+    .padStart(decimals + 4, ' ');
 };
 
 const styles = StyleSheet.create({

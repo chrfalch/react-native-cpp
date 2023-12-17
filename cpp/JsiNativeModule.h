@@ -27,8 +27,10 @@ public:
    */
   static void install(jsi::Runtime &rt, const std::string &moduleName,
                       const jsi::Value &parent = jsi::Value::undefined()) {
+#if LOG_MODULE_REGISTRY
     JsiLogger::logToConsole("JsiNativeModule: Installing Native Module %s",
                             moduleName.c_str());
+#endif
 
     // Create module
     auto newModule = jsi::Object(rt);
@@ -58,8 +60,10 @@ public:
    */
   static void registerHostFunction(const std::string &name,
                                    const jsi::HostFunctionType &func) {
+#if LOG_MODULE_REGISTRY
     JsiLogger::logToConsole("JsiNativeModule: Installing host function %s",
                             name.c_str());
+#endif
     getHostFunctions().emplace(name, func);
   }
 
