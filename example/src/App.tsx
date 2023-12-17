@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-import {} from 'react-native-cpp';
+import 'react-native-cpp';
+import '../cpp/types.ts';
 
 export default function App() {
   return (
@@ -10,29 +11,25 @@ export default function App() {
       <Text>
         {'TestModule: ' +
           ('TestModule' in globalThis
-            ? `[${Object.keys(globalThis['TestModule'])}] = ${globalThis[
-                'TestModule'
-              ].add(2, 2)}`
+            ? `[${Object.keys(
+                globalThis.TestModule
+              )}] = ${globalThis.TestModule.add(2, 2)}`
             : false)}
       </Text>
       <Text>
         {'JsiTestClass: ' +
           ('JsiTestClass' in globalThis
-            ? `[${Object.keys(globalThis['JsiTestClass'])}] = ${globalThis[
-                'JsiTestClass'
-              ]
-                .create()
-                .getX()}`
+            ? `[${Object.keys(
+                globalThis.JsiTestClass
+              )}] = ${globalThis.JsiTestClass.create().getX()}`
             : false)}
       </Text>
       <Text>
         {'JsiStateTestClass: ' +
           ('JsiStateTestClass' in globalThis
-            ? `[${Object.keys(globalThis['JsiStateTestClass'])}] = ${globalThis[
-                'JsiStateTestClass'
-              ]
-                .create(10, 20)
-                .getX()}`
+            ? `[${Object.keys(
+                globalThis.JsiStateTestClass
+              )}] = ${globalThis.JsiStateTestClass.create(10, 20).getX()}`
             : false)}
       </Text>
     </View>
