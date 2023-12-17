@@ -120,49 +120,19 @@ template <typename T> struct JsiNativeObjectRegistrar {
   static JsiNativeObjectRegistrar<CLASS> CLASS##_METHOD##_registrar(           \
       EXPORT_NAME);
 
+/**
+ * Implements a simple utility struct for creating static registrars for
+ * initializer function
+ * @tparam T Class to register initializer for
+ */
+template <typename T> struct JsiInitializerRegistrar {
+  JsiInitializerRegistrar(const jsi::HostFunctionType &func) {
+    T::setInitializerFunction(func);
+  }
+};
+
 #define JSI_INITIALIZER(CLASS, FUNC)                                           \
-  static inline struct initializer_registrar {                                 \
-    initializer_registrar() {                                                  \
-      CLASS::setInitializerFunction(                                           \
-          [](jsi::Runtime & rt, const jsi::Value &thisValue,                   \
-             const jsi::Value *args, size_t count) FUNC);                      \
-    }                                                                          \
-  } initializer_registrar__;
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-// TESTS
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-
-class MyJsiTestClass : public JsiNativeObject<MyJsiTestClass> {
-public:
-  JSI_HOST_FUNCTION(MyJsiTestClass, return_100, { return 100; });
-};
-
-JSI_EXPORT_OBJECT(MyJsiTestClass, "__JsiTestObject")
-
-struct TestState {
-  TestState(double x, double y) : x(x), y(y) {}
-  double x = 0;
-  double y = 0;
-};
-
-class MyJsiStateTestClass
-    : public JsiNativeObject<MyJsiStateTestClass, TestState> {
-public:
-    JSI_INITIALIZER(MyJsiStateTestClass, {
-      make_state(rt, thisValue, args[0].asNumber(), args[1].asNumber());
-      return jsi::Value::undefined();
-    });
-
-  JSI_HOST_FUNCTION(MyJsiStateTestClass, area, {
-    auto s = getState(rt, thisValue);
-    if (s != nullptr) {
-      return s->x * s->y;
-    }
-    return 0.0;
-  });
-};
-
-JSI_EXPORT_OBJECT(MyJsiStateTestClass, "__JsiStateObject")
+  [[maybe_unused]] static inline JsiInitializerRegistrar<CLASS>                \
+      initializer_registrar__ = JsiInitializerRegistrar<CLASS>(FUNC);
 
 } // namespace RNJsi

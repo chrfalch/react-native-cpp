@@ -86,23 +86,7 @@ template <typename T> struct JsiHostFunctionRegistrar {
 };
 
 #define JSI_HOST_FUNCTION(CLASS, METHOD, FUNC)                                 \
-  static inline struct METHOD##_registrar {                                    \
-    METHOD##_registrar() {                                                     \
-      CLASS::registerHostFunction(                                             \
-          #METHOD, [](jsi::Runtime & rt, const jsi::Value &thisValue,          \
-                      const jsi::Value *args, size_t count) FUNC);             \
-    }                                                                          \
-  } METHOD##_registrar__;
-
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-// TESTS
-/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
-
-class MyJsiTestModule : public JsiNativeModule<MyJsiTestModule> {
-public:
-  JSI_HOST_FUNCTION(MyJsiTestModule, return_200, { return 200; })
-};
-
-JSI_EXPORT_MODULE(MyJsiTestModule, "JsiTestModule")
+  [[maybe_unused]] static inline JsiHostFunctionRegistrar<CLASS>               \
+      METHOD##_registrar__ = JsiHostFunctionRegistrar<CLASS>(#METHOD, FUNC);
 
 } // namespace RNJsi
