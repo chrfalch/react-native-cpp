@@ -33,17 +33,21 @@ Pod::Spec.new do |s|
           # Check if sources is an array
           if sources.is_a?(Array)
             puts "Including/adding the following C++ sources to podspec:"
-            puts sources
             # Assuming package_json_path is a string representing the root path
             library_pathname = Pathname.new(Dir.pwd)
             # Convert each path in sources to a relative path
             relative_sources = sources.map do |path|
               full_path = Pathname.new(File.join(app_path, path))
-              full_path.relative_path_from(library_pathname).to_s              
-            end          
+              full_path.relative_path_from(library_pathname).to_s
+            end            
             # Add the includes to the file
             relative_sources.each do |path|
-              file.puts("#import \"#{File.basename(path)}\"")
+              # Can be a glob, let's de-glob it
+              include_files = Dir.glob(path)
+              include_files.each do |include_file|
+                puts include_file
+                file.puts("#import \"#{File.basename(include_file)}\"")
+              end
             end
             # Include with the source files
             s.source_files = ["ios/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}", relative_sources].flatten                      

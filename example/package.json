@@ -26,9 +26,8 @@
   },
   "nativeDependencies": {
     "sources": [
-      "cpp/test_object.h",
-      "cpp/jsi_test_object.h",
-      "cpp/jsi_test_object_with_state.h"
+      "cpp/*.h",
+      "cpp/api/test_object.h"
     ]
   },
   "engines": {

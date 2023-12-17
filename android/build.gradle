@@ -68,28 +68,36 @@ static def generateIncludeFile(rootProject, project) {
 
   // Delete/reset the generated include file
   def generated_include = new File(project.projectDir, 'react-native-cpp-includes.h')
-  println("Recreating include file: ${generated_include.getPath()}")
   generated_include.delete()
+
+  println("react-native-cpp: Generating ${generated_include.getPath()}")
 
   // Extract the list of files
   if (packageJson.nativeDependencies && packageJson.nativeDependencies.sources) {
-    // Convert to full paths from project dir
-    def include_files = packageJson.nativeDependencies.sources.collect { value ->
-      return rootProject.file("../" + value)
-    }
     // Recreate the output header file
     generated_include.createNewFile()
-    // Write elements to the file
-    include_files.each { include ->
-      generated_include.append("#import \"${include.getName()}\"\n") // Appends each element on a new line
+    // Convert to full paths from project dir
+    def include_files = packageJson.nativeDependencies.sources.collect { value ->
+      return rootProject.file(value)
     }
-    println("react-native-cpp: Created react-native-cpp-includes.h")
-    // Now let's create a map of the include directories used.
-    def uniqueDirs = include_files.collect {
-      it.parentFile.path
-    }.toSet()
-
-    return uniqueDirs.join(";")
+    // Define set to create unique directories
+    Set<Object> unique_dirs = new HashSet<>()
+    // Write elements to the file
+    include_files.each { file ->
+      def pathBase = rootProject.projectDir.toPath()
+      def pathAbsolute = file.toPath()
+      String relativePath = pathBase.relativize(pathAbsolute)
+      def includes = rootProject.fileTree(dir: "..", includes: [relativePath])
+      includes.each { include ->
+        println("react-native-cpp: ${include}")
+        generated_include.append("#import \"${include.getName()}\"\n") // Appends each element on a new line
+        unique_dirs.add(include.parentFile.path)
+      }
+    }
+    println("react-native-cpp: Generated react-native-cpp-includes.h")
+    // Now let's return the unique directories we found
+    println("react-native-cpp: Include directories ${unique_dirs.join(";")}")
+    return unique_dirs.join(";")
   }
   return "."
 }

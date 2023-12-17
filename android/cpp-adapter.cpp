@@ -8,8 +8,6 @@ namespace jsi = facebook::jsi;
 #import "react-native-cpp-includes.h"
 #endif
 
-#import "react-native-cpp-includes.h"
-
  extern "C"
  JNIEXPORT jboolean JNICALL
  Java_com_cpp_CppModule_nativeInstall(JNIEnv *env, jclass type, jlong runtimePtr) {
