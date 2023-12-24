@@ -1,5 +1,6 @@
 require "json"
 require 'pathname'
+require_relative './pod_helpers'
 
 package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
@@ -16,49 +17,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/chrfalch/react-native-cpp.git", :tag => "#{s.version}" }
 
   s.source_files = ["ios/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}"]
-
-  # Resolve RN Project path
-  app_path = ENV["APP_PATH"]
-  if app_path
-    package_json_path = File.join(app_path, 'package.json')
-    if File.exist?(package_json_path)
-      # Read and parse the package.json file
-      package_json = JSON.parse(File.read(package_json_path))
-      # Check if 'nativeDependencies' and 'cppSources' are present
-      if package_json['nativeDependencies'] && package_json['nativeDependencies']['sources']
-        # Create a new file in the library folder that should contain includes for the native files
-        File.open(File.join(Dir.pwd, "ios", "react-native-cpp-includes.h"), "w") do |file|
-          # Extract the C++ source file paths
-          sources = package_json['nativeDependencies']['sources']
-          # Check if sources is an array
-          if sources.is_a?(Array)
-            puts "Including/adding the following C++ sources to podspec:"
-            # Assuming package_json_path is a string representing the root path
-            library_pathname = Pathname.new(Dir.pwd)
-            # Convert each path in sources to a relative path
-            relative_sources = sources.map do |path|
-              full_path = Pathname.new(File.join(app_path, path))
-              full_path.relative_path_from(library_pathname).to_s
-            end            
-            # Add the includes to the file
-            relative_sources.each do |path|
-              # Can be a glob, let's de-glob it
-              include_files = Dir.glob(path)
-              include_files.each do |include_file|
-                puts include_file
-                if File.extname(include_file) == ".h" || File.extname(include_file) == ".hpp"
-                  file.puts("#import \"#{File.basename(include_file)}\"")
-                end
-              end
-            end
-            # Include with the source files
-            s.source_files = ["ios/**/*.{h,m,mm}", "cpp/**/*.{hpp,cpp,c,h}", relative_sources].flatten                      
-          end
-        end
-      end
-    end
-  end
-
+  
   # Use install_modules_dependencies helper to install the dependencies if React Native version >=0.71.0.
   # See https://github.com/facebook/react-native/blob/febf6b7f33fdb4904669f99d795eba4c0f95d7bf/scripts/cocoapods/new_architecture.rb#L79.
   if respond_to?(:install_modules_dependencies, true)
@@ -81,4 +40,11 @@ Pod::Spec.new do |s|
     s.dependency "ReactCommon/turbomodule/core"
    end
   end    
+
+  # Resolve all build files using react-native-cpp
+  subspecs = RNCppPodHelpers.enumerate_build_configs(ENV["APP_PATH"], s)
+  subspecs.each do |subspec|
+    s.subspecs.push(subspec)
+  end
+  
 end

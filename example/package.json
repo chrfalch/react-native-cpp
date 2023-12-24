@@ -24,12 +24,6 @@
     "babel-plugin-module-resolver": "^5.0.0",
     "pod-install": "^0.1.0"
   },
-  "nativeDependencies": {
-    "sources": [
-      "cpp/*.h",
-      "cpp/api/*"
-    ]
-  },
   "engines": {
     "node": ">=18"
   }

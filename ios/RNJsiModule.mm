@@ -4,8 +4,8 @@
 #import <jsi/jsi.h>
 #import <string>
 
-#if __has_include("react-native-cpp-includes.h")
-#import "react-native-cpp-includes.h"
+#if __has_include("react-native-cpp.h")
+#import "react-native-cpp.h"
 #endif
 
 @implementation Cpp
