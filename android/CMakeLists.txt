@@ -9,6 +9,8 @@ message("RNCPP: (CMake) Starting CMake build...")
 message("RNCPP: (CMake) Source files: ${CPP_FILES}")
 message("RNCPP: (CMake) Includes: ${CPP_INCLUDE_DIRS}")
 message("RNCPP: (CMake) node_modules: ${NODE_MODULES_DIR}")
+message("RNCPP: (CMake) find_packages: ${FIND_PACKAGES}")
+message("RNCPP: (CMake) target_link_libraries: ${TARGET_LINK_LIBRARIES}")
 
 set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD 17)
@@ -20,6 +22,10 @@ set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 # RN 0.71 distributes prebuilt binaries.
 find_package(fbjni REQUIRED CONFIG)
 find_package(ReactAndroid REQUIRED CONFIG)
+
+foreach(PACKAGE IN LISTS FIND_PACKAGES)
+  find_package(${PACKAGE} REQUIRED CONFIG)
+endforeach()
 
 find_library(LOG_LIB log)
 
@@ -39,6 +45,6 @@ include_directories(
 target_link_libraries(
   ${PACKAGE_NAME}
   ReactAndroid::jsi
-  fbjni::fbjni
+  ${TARGET_LINK_LIBRARIES}
   ${LOG_LIB}
 )

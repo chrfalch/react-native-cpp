@@ -24,6 +24,12 @@
     "includes": [
       "../node_modules/react-native/ReactCommon/react/nativemodule/core",
       "../node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
+    ],
+    "packages": [
+      {
+        "find_package": "fbjni",
+        "target_link_library": "fbjni::fbjni"
+      }
     ]
   }
 }

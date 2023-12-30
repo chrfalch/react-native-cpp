@@ -62,6 +62,8 @@ static def extractBuildConfig(configFile,
                               generated_include,
                               unique_dirs,
                               cpp_files,
+                              find_packages,
+                              target_link_libraries,
                               rootProject) {
   def configJson = new JsonSlurper().parseText(configFile.text)
   if (!configJson.name) {
@@ -99,11 +101,23 @@ static def extractBuildConfig(configFile,
     }
 
     // Let's add additional settings
+
+    // Look for include directories:
     if (configJson.android && configJson.android.includes) {
       def includes = configJson.android.includes
       if (includes.size() > 0) {
         includes.each { include ->
           unique_dirs.add(include)
+        }
+      }
+    }
+    // Look for packages to link with (prefab packages only for now)
+    if (configJson.android && configJson.android.packages) {
+      def packages = configJson.android.packages
+      if (packages.size() > 0) {
+        packages.each { p ->
+          find_packages.add(p.find_package)
+          target_link_libraries.add(p.target_link_library)
         }
       }
     }
@@ -126,26 +140,35 @@ static def enumerateBuildConfigs(rootProject, project) {
     // Define set to create unique directories
     Set<Object> unique_dirs = new HashSet<>()
     Set<Object> cpp_files = new HashSet<>()
+    Set<Object> find_packages = new HashSet<>();
+    Set<Object> target_link_libraries = new HashSet<>();
 
     println("RNCPP: Found ${configurationFiles.size()} configuration files.")
     configurationFiles.each { configFile ->
       // Process each file
-      extractBuildConfig(configFile, generated_include, unique_dirs, cpp_files, rootProject)
+      extractBuildConfig(configFile,
+        generated_include, unique_dirs, cpp_files, find_packages,
+        target_link_libraries, rootProject)
     }
 
     println("RNCPP: Generated react-native-cpp-includes.h")
+
     // Now let's return the unique directories we found
     println("RNCPP: Includes ${unique_dirs.join(";")}")
     println("RNCPP: Cpp files ${cpp_files.join(";")}")
+    println("RNCPP: find_package ${find_packages.join(";")}")
+    println("RNCPP: target_link_library ${target_link_libraries.join(";")}")
 
-    return [unique_dirs.join(";"), cpp_files.join(";")]
+    return [unique_dirs.join(";"), cpp_files.join(";"), find_packages.join(";"), target_link_libraries.join(";")]
   }
-  return [".", ""]
+  return [".", "", "", ""]
 }
 
 def results = enumerateBuildConfigs(rootProject, project)
 def includeDirectories = results[0]
 def cppFiles = results[1]
+def find_packages = results[2]
+def target_link_libraries = results[3]
 
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
@@ -179,6 +202,8 @@ android {
           "-DNODE_MODULES_DIR=${nodeModulesDir}",
           "-DCPP_FILES=${cppFiles}",
           "-DCPP_INCLUDE_DIRS=${includeDirectories}",
+          "-DFIND_PACKAGES=${find_packages}",
+          "-DTARGET_LINK_LIBRARIES=${target_link_libraries}"
           "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled()}"
       }
     }
