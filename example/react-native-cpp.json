@@ -21,6 +21,9 @@
     }
   },
   "android": {
-    "dependencies": []
+    "includes": [
+      "../node_modules/react-native/ReactCommon/react/nativemodule/core",
+      "../node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
+    ]
   }
 }
