@@ -8,6 +8,7 @@ set (PACKAGE_NAME "react-native-cpp")
 
 set(build_DIR ${CMAKE_SOURCE_DIR}/build)
 
+# RN 0.71 distributes prebuilt binaries.
 find_package(ReactAndroid REQUIRED CONFIG)
 find_library(LOG_LIB log)
 

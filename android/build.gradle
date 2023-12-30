@@ -52,10 +52,90 @@ static def findNodeModules(baseDir) {
     }
     basePath = basePath.getParent()
   }
-  throw new GradleException("react-native-cpp: Failed to find node_modules/ path!")
+  throw new GradleException("RNCPP: Failed to find node_modules/ path!")
 }
 
 def nodeModules = findNodeModules(projectDir)
+
+static def extractBuildConfig(configFile, generated_include, unique_dirs, cpp_files, rootProject) {
+  def configJson = new JsonSlurper().parseText(configFile.text)
+  if (!configJson.name) {
+    throw new GradleException("RNCPP: The configuration file ${configFile.absolutePath} does not contain a name")
+  }
+
+  if (configJson.sources) {
+    def sources = configJson.sources
+    // Convert to full paths from project dir
+    def include_files = sources.collect { value ->
+      return rootProject.file(value)
+    }
+
+    // Write elements to the file
+    include_files.each { file ->
+      def pathBase = rootProject.projectDir.toPath()
+      def pathAbsolute = file.toPath()
+      String relativePath = pathBase.relativize(pathAbsolute)
+      def includes = rootProject.fileTree(dir: "..", includes: [relativePath])
+      includes.each { include ->
+        String fileName = include.getName();
+        String extension = "";
+        int i = fileName.lastIndexOf('.');
+        if (i >= 0) {
+          extension = fileName.substring(i + 1);
+        }
+        if (extension == "h"|| extension == "hpp") {
+          println("RNCPP: ${include}")
+          generated_include.append("#import \"${fileName}\"\n") // Appends each element on a new line
+        } else {
+          cpp_files.add(include)
+        }
+        unique_dirs.add(include.parentFile.path)
+      }
+    }
+    println("RNCPP: Generated react-native-cpp-includes.h")
+    // Now let's return the unique directories we found
+    println("RNCPP: Include directories ${unique_dirs.join(";")}")
+    println("RNCPP: Cpp files ${cpp_files.join(";")}")
+  } else {
+    println("RNCPP: Skipping ${configFile.absolutePath}, no source files present in config.")
+  }
+}
+
+static def enumerateBuildConfigs(rootProject, project) {
+  // Delete/reset the generated include file
+  def generated_include = new File(project.projectDir, 'react-native-cpp-includes.h')
+  generated_include.delete()
+
+  def configurationFiles = rootProject.fileTree(dir: "..", includes: ['**/react-native-cpp.json'])
+  if (configurationFiles.size() > 0) {
+    // Recreate the output header file
+    println("RNCPP: Generating ${generated_include.getPath()}")
+    generated_include.createNewFile()
+
+    // Define set to create unique directories
+    Set<Object> unique_dirs = new HashSet<>()
+    Set<Object> cpp_files = new HashSet<>()
+
+    println("RNCPP: Found ${configurationFiles.size()} configuration files.")
+    configurationFiles.each { configFile ->
+      // Process each file
+      extractBuildConfig(configFile, generated_include, unique_dirs, cpp_files, rootProject)
+    }
+
+    println("RNCPP: Generated react-native-cpp-includes.h")
+    // Now let's return the unique directories we found
+    println("RNCPP: Include directories ${unique_dirs.join(";")}")
+    println("RNCPP: Cpp files ${cpp_files.join(";")}")
+
+    return [unique_dirs.join(";"), cpp_files.join(";")]
+  }
+  return [".", ""]
+}
+
+
+def results = enumerateBuildConfigs(rootProject, project)
+def includeDirectories = results[0]
+def cppFiles = results[1]
 
 static def generateIncludeFile(rootProject, project) {
   def basePath = rootProject.projectDir.toPath().normalize()
@@ -70,7 +150,7 @@ static def generateIncludeFile(rootProject, project) {
   def generated_include = new File(project.projectDir, 'react-native-cpp-includes.h')
   generated_include.delete()
 
-  println("react-native-cpp: Generating ${generated_include.getPath()}")
+  println("RNCPP: Generating ${generated_include.getPath()}")
 
   // Extract the list of files
   if (packageJson.nativeDependencies && packageJson.nativeDependencies.sources) {
@@ -98,7 +178,7 @@ static def generateIncludeFile(rootProject, project) {
           extension = fileName.substring(i + 1);
         }
         if (extension == "h"|| extension == "hpp") {
-          println("react-native-cpp: ${include}")
+          println("RNCPP: ${include}")
           generated_include.append("#import \"${fileName}\"\n") // Appends each element on a new line
         } else {
           cpp_files.add(include)
@@ -106,19 +186,14 @@ static def generateIncludeFile(rootProject, project) {
         unique_dirs.add(include.parentFile.path)
       }
     }
-    println("react-native-cpp: Generated react-native-cpp-includes.h")
+    println("RNCPP: Generated react-native-cpp-includes.h")
     // Now let's return the unique directories we found
-    println("react-native-cpp: Include directories ${unique_dirs.join(";")}")
-    println("react-native-cpp: Cpp files ${cpp_files.join(";")}")
+    println("RNCPP: Include directories ${unique_dirs.join(";")}")
+    println("RNCPP: Cpp files ${cpp_files.join(";")}")
     return [unique_dirs.join(";"), cpp_files.join(";")]
   }
   return [".", ""]
 }
-
-
-def results = generateIncludeFile(rootProject, project)
-def includeDirectories = results[0]
-def cppFiles = results[1]
 
 android {
   if (supportsNamespace()) {

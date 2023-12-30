@@ -9,7 +9,7 @@ module RNCppPodHelpers
         config = JSON.parse(File.read(path))    
         config_name = config["name"]
         if !config_name
-            fail "RNCPP: #{path} does not contain a name"
+            fail "RNCPP: The configuration file #{path} does not contain a name"
         end        
         
         # Check if 'sources' is present - we don't do anything if there are no sources
