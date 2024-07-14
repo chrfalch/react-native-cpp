@@ -22,8 +22,3 @@ MIT
 
 Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
 
-## TODO:
-
-[X] - Support file globs
-[X] - Support CPP files
-[ ] - Support multiple levels of objects (modules with child modules)
